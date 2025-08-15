@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrbanCart - E-commerce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: #f9f9f9;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 3rem;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            color: #4f46e5;
+            margin: 0;
+        }
+
+        nav a {
+            margin-left: 1rem;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .search-bar input {
+            padding: 0.6rem;
+            width: 280px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .banner {
+            background: linear-gradient(90deg, #4f46e5, #a78bfa);
+            color: #fff;
+            padding: 3rem;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .banner button {
+            margin-top: 1rem;
+            padding: 0.8rem 2rem;
+            background-color: #fff;
+            color: #4f46e5;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .categories {
+            padding: 2rem 3rem;
+            text-align: center;
+        }
+
+        .categories button {
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .categories button.active {
+            background-color: #4f46e5;
+            color: #fff;
+            border: none;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+            padding: 0 3rem 3rem;
+        }
+
+        .product-card {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding-bottom: 1rem;
+            position: relative;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .product-card:hover {
+            transform: scale(1.03);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .discount {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: red;
+            color: #fff;
+            padding: 0.3rem 0.5rem;
+            font-size: 0.8rem;
+            border-radius: 3px;
+        }
+
+        .product-card button {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: #4f46e5;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        footer {
+            background: #fff;
+            padding: 2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #ddd;
+            flex-wrap: wrap;
+        }
+
+        footer div {
+            margin-bottom: 1rem;
+        }
+
+        footer a {
+            display: block;
+            color: #333;
+            text-decoration: none;
+            margin-bottom: 0.3rem;
+        }
+
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+        }
+
+        .cart-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+
+        .cart-content h2 {
+            margin-top: 0;
+        }
+
+        .cart-items li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .cart-items button {
+            background: red;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-bar input {
+                width: 90%;
+            }
+
+            footer {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>UrbanCart</h1>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search products...">
+        </div>
+        <nav>
+            <a href="#" id="cartBtn">Cart (<span id="cartCount">0</span>)</a>
+        </nav>
+    </header>
+    <section class="banner">
+        <h2>Discover Amazing Products</h2>
+        <p>Shop the latest trends with unbeatable prices and fast delivery</p>
+        <button>Shop Now</button>
+    </section>
+    <section class="categories">
+        <button class="active" data-category="all">All</button>
+        <button data-category="Electronics">Electronics</button>
+        <button data-category="Home">Home</button>
+        <button data-category="Furniture">Furniture</button>
+    </section>
+
+    <section class="products-grid" id="productGrid"></section>
+
+
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <h2>Your Cart</h2>
+            <ul class="cart-items"></ul>
+            <button onclick="closeCart()">Close</button>
+        </div>
+    </div>
+
+
+    <footer>
+        <div>
+            <h4>UrbanCart</h4>
+            <p>Your one-stop destination for quality products at amazing prices.</p>
+        </div>
+        <div>
+            <h4>Shop</h4>
+            <a href="#">Electronics</a>
+            <a href="#">Home & Garden</a>
+            <a href="#">Furniture</a>
+        </div>
+        <div>
+            <h4>Support</h4>
+            <a href="#">Contact Us</a>
+            <a href="#">FAQ</a>
+        </div>
+    </footer>
+
+
+    <script defer>
+        const products = [
+            { name: "Wireless Bluetooth Headphones", category: "Electronics", price: 59.99 * 83, rating: 4.8, reviews: 1247, discount: 20, image: "images/headphones.jpg" },
+            { name: "Smart Watch Series X", category: "Electronics", price: 129.99 * 83, rating: 4.6, reviews: 892, discount: 11, image: "images/smart-watch.jpg" },
+            { name: "Premium Coffee Maker", category: "Home", price: 89.99 * 83, rating: 4.5, reviews: 634, discount: 0, image: "images/coffee maker.jpg" },
+            { name: "Comfortable Sofa", category: "Furniture", price: 199.99 * 83, rating: 4.7, reviews: 321, discount: 15, image: "images/comfortable_sofa.jpg" },
+            { name: "Gaming Laptop", category: "Electronics", price: 999.99 * 83, rating: 4.9, reviews: 543, discount: 5, image: "images/gaming_laptop.jpg" },
+        ];
+
+        let cart = [];
+
+        function formatPrice(price) {
+            return `₹ ${price.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
+        }
+
+        function renderProducts(filter = "all", searchTerm = "") {
+            const grid = document.getElementById("productGrid");
+            grid.innerHTML = "";
+
+            products
+                .filter(p => (filter === "all" || p.category === filter) && p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                .forEach((p, idx) => {
+                    const card = document.createElement("div");
+                    card.className = "product-card";
+                    card.innerHTML = `
+                        ${p.discount ? `<span class="discount">-${p.discount}%</span>` : ""}
+                        <img src="${p.image}" alt="${p.name}" loading="lazy">
+                        <h3>${p.name}</h3>
+                        <p>⭐ ${p.rating} (${p.reviews} reviews)</p>
+                        <p><strong>${formatPrice(p.price)}</strong></p>
+                        <button onclick="addToCart(${idx})">Add to Cart</button>
+                    `;
+                    grid.appendChild(card);
+                });
+        }
+
+        function addToCart(index) {
+            cart.push(products[index]);
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            document.getElementById("cartCount").innerText = cart.length;
+        }
+
+        function showCart() {
+            const cartList = document.querySelector(".cart-items");
+            cartList.innerHTML = "";
+
+            if (cart.length === 0) {
+                cartList.innerHTML = "<p>Your cart is empty.</p>";
+                return;
+            }
+
+            cart.forEach((item, idx) => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <span>${item.name} - ${formatPrice(item.price)}</span>
+                    <button onclick="removeFromCart(${idx})">❌</button>
+                `;
+                cartList.appendChild(li);
+            });
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartCount();
+            showCart();
+        }
+
+        document.getElementById("cartBtn").addEventListener("click", () => {
+            showCart();
+            document.getElementById("cartModal").style.display = "flex";
+        });
+
+        function closeCart() {
+            document.getElementById("cartModal").style.display = "none";
+        }
+
+        document.querySelectorAll(".categories button").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".categories button").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                renderProducts(btn.dataset.category, document.getElementById("searchInput").value);
+            });
+        });
+
+        document.getElementById("searchInput").addEventListener("input", (e) => {
+            const category = document.querySelector(".categories button.active").dataset.category;
+            renderProducts(category, e.target.value);
+        });
+
+        renderProducts();
+    </script>
+
+</body>
+
+</html>
